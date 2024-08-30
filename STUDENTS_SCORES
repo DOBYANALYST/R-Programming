@@ -1,0 +1,83 @@
+install.packages("tidyverse")
+install.packages("dplyr")
+install.packages("ggplot")
+install.packages("lubridate")
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+
+library(readr)
+STUDENTS_DATA <- read_csv("STUDENTS_DATA.csv")
+View(STUDENTS_DATA)
+
+##DELETE UNNECESSARY DATA##
+STUDENTS_DATA <- STUDENTS_DATA %>%
+  select(-c(Gender...3, Ethnicity...5, ParentalEducation...7, ParentalSupport...13, Tutoring...11, Extracurricular...15, Sports...17, Music...19, Volunteering...21, GradeClass...25))
+
+view(STUDENTS_DATA)
+
+colnames(STUDENTS_DATA)
+
+##RENAME DATA##
+(STUDENTS_DATA <- rename(STUDENTS_DATA
+                        ,Gender = Gender...4
+                        ,Ethnicity = Ethnicity...6
+                        ,ParentalEducation = ParentalEducation...8
+                        ,Tutoring = Tutoring...12
+                        ,ParentalSupport = ParentalSupport...14
+                        ,Extracurricular = Extracurricular...16
+                        ,Sports = Sports...18
+                        ,Music = Music...20
+                        ,Volunteering = Volunteering...22
+                        ,Gradeclass = GradeClass...26
+                        ))
+view(STUDENTS_DATA)
+
+summary(STUDENTS_DATA)
+
+STUDENTS_DATA_V2  <- STUDENTS_DATA
+
+Summary_Students_Data <- STUDENTS_DATA_V2 %>%
+  group_by(Gender, `GPA MARK`) %>%
+  reframe(StudyTimeWeekly)
+
+##Summarize data to get the average StudyTimeWeekly for each GPA MARK##
+summary_data_studytimeweekly <- STUDENTS_DATA %>%
+  group_by(`GPA MARK`) %>%
+  summarise(AverageStudyTime = mean(StudyTimeWeekly, na.rm = TRUE))
+
+View(summary_data_studytimeweekly)
+
+##Summarize data to get the average Absence days for each GPA MARK##
+summary_data_absencedays <- STUDENTS_DATA %>%
+  group_by(`GPA MARK`) %>%
+  summarise(Absences = mean(Absences, na.rm = TRUE))
+
+view(summary_data_absencedays)
+
+ggplot(STUDENTS_DATA, aes(x = ParentalSupport, y = Gradeclass, fill = ParentalSupport)) +
+  geom_jitter(aes(colour = ParentalSupport), width = 0.3, height = 1) +
+  labs(x = "ParentalSupport", y = "Gradeclass", title = "Effect of Parental Support on Student Grades") +
+  theme_minimal()
+
+ggplot(STUDENTS_DATA, aes(x = `GPA SCORES`)) +
+  geom_histogram(bins = 30, fill = "blue", color = "black") +
+  labs(title = "Distribution of GPA Scores", x = "GPA Scores", y = "Frequency") +
+  theme_minimal()
+
+ggplot(summary_data_studytimeweekly, aes(x = `GPA MARK`, y = AverageStudyTime, fill = `GPA MARK`)) +
+  geom_col() +
+  labs(x = "`GPA MARK`", y = "AverageStudyTime", title = "Effect of Weekly Study Time on Student GPAs") +
+  scale_x_discrete() +
+  scale_y_continuous(breaks = seq(0, max(summary_data_studytimeweekly$AverageStudyTime), by = 5)) +
+  scale_fill_manual(values = c("fail" = "purple", "Pass" = "blue", "Average" = "yellow", "Good" = "orange", "Distinction" = "lightgreen")) +
+  theme_light()
+
+ggplot(summary_data_absencedays, aes(x = `GPA MARK`, y = Absences, fill = `GPA MARK`)) +
+  geom_col() +
+  labs(x = "`GPA MARK`", y = "Absences", title = "Effect of Absentism on Student GPAs") +
+  scale_x_discrete() +
+  scale_fill_manual(values = c("fail" = "purple", "Pass" = "blue", "Average" = "yellow", "Good" = "orange", "Distinction" = "lightgreen")) +
+  theme_light()
+ 
