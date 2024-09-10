@@ -1,3 +1,6 @@
+##STUDENTS SCORES ##
+
+##INSTALL AND LOAD THE NECESSARY PACKAGES##
 install.packages("tidyverse")
 install.packages("dplyr")
 install.packages("ggplot")
@@ -7,11 +10,13 @@ library(dplyr)
 library(ggplot2)
 library(lubridate)
 
+ ##IMPORT THE CLEANED DATA USING EXCEL##
 library(readr)
 STUDENTS_DATA <- read_csv("STUDENTS_DATA.csv")
 View(STUDENTS_DATA)
 
-##DELETE UNNECESSARY DATA##
+
+##DELETE UNNECESSARY COLUMN AND DATA##
 STUDENTS_DATA <- STUDENTS_DATA %>%
   select(-c(Gender...3, Ethnicity...5, ParentalEducation...7, ParentalSupport...13, Tutoring...11, Extracurricular...15, Sports...17, Music...19, Volunteering...21, GradeClass...25))
 
@@ -36,36 +41,41 @@ view(STUDENTS_DATA)
 
 summary(STUDENTS_DATA)
 
+##CREATE ANOTHER TABLE USING THE EXISTING TABLE SO AS TO SUMMARISE THE DATA##
 STUDENTS_DATA_V2  <- STUDENTS_DATA
 
+##SUMMARISE THE DATA##
 Summary_Students_Data <- STUDENTS_DATA_V2 %>%
   group_by(Gender, `GPA MARK`) %>%
   reframe(StudyTimeWeekly)
 
-##Summarize data to get the average StudyTimeWeekly for each GPA MARK##
+##SUMMARIZE THE DATA TO GET THE AVERAGE STUDYTIMEWEEKLY FOR EACH GPA MARK##
 summary_data_studytimeweekly <- STUDENTS_DATA %>%
   group_by(`GPA MARK`) %>%
   summarise(AverageStudyTime = mean(StudyTimeWeekly, na.rm = TRUE))
 
 View(summary_data_studytimeweekly)
 
-##Summarize data to get the average Absence days for each GPA MARK##
+##SUMMARIZE DATA TO GET THE AVERAGE ABSENCE DAYS FOR EACH GPA MARK##
 summary_data_absencedays <- STUDENTS_DATA %>%
   group_by(`GPA MARK`) %>%
   summarise(Absences = mean(Absences, na.rm = TRUE))
 
 view(summary_data_absencedays)
 
+##USE A SCATTERPLOT TO SEE THE EFFECT OF PARENTAL SUPPORT ON STUDENT GRADES##
 ggplot(STUDENTS_DATA, aes(x = ParentalSupport, y = Gradeclass, fill = ParentalSupport)) +
   geom_jitter(aes(colour = ParentalSupport), width = 0.3, height = 1) +
   labs(x = "ParentalSupport", y = "Gradeclass", title = "Effect of Parental Support on Student Grades") +
   theme_minimal()
 
+##USE A HISTOGRAM TO SEE THE RANGES OR FREQUENCY OF DIFFERENT GPA##
 ggplot(STUDENTS_DATA, aes(x = `GPA SCORES`)) +
   geom_histogram(bins = 30, fill = "blue", color = "black") +
   labs(title = "Distribution of GPA Scores", x = "GPA Scores", y = "Frequency") +
   theme_minimal()
 
+##USE A COLUMN CHART TO COMPARE STUDENT STUDY TIME TO THEIR GPA SCORES##
 ggplot(summary_data_studytimeweekly, aes(x = `GPA MARK`, y = AverageStudyTime, fill = `GPA MARK`)) +
   geom_col() +
   labs(x = "`GPA MARK`", y = "AverageStudyTime", title = "Effect of Weekly Study Time on Student GPAs") +
@@ -74,6 +84,7 @@ ggplot(summary_data_studytimeweekly, aes(x = `GPA MARK`, y = AverageStudyTime, f
   scale_fill_manual(values = c("fail" = "purple", "Pass" = "blue", "Average" = "yellow", "Good" = "orange", "Distinction" = "lightgreen")) +
   theme_light()
 
+##USE A COLUMN CHART TO COMPARE STUDENTS GPA TO THE NUMBER OF TIME THEY ARE ABSENT##
 ggplot(summary_data_absencedays, aes(x = `GPA MARK`, y = Absences, fill = `GPA MARK`)) +
   geom_col() +
   labs(x = "`GPA MARK`", y = "Absences", title = "Effect of Absentism on Student GPAs") +
