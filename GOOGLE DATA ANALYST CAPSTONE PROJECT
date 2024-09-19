@@ -1,5 +1,6 @@
 DIVVY TRIPS
 
+#INSTALL THE NECESSARY PACKAGES#
 install.packages("tidyverse")
 install.packages("lubridate")
 install.packages("ggplot2")
@@ -13,9 +14,11 @@ library(readxl)
 Divvy_Trips_2019_Q1 <- read_excel("Divvy_Trips_2019_Q1.xlsx")
 Divvy_Trips_2020_Q1 <- read_excel("Divvy_Trips_2020_Q1.xlsx")
 
+#VIEW THE COLUMN NAMES#
 colnames(Divvy_Trips_2019_Q1)
 colnames(Divvy_Trips_2020_Q1)
 
+#RENAME THE COLUMN NAMES OF 2019 TO BE SIMILAR WOTH 2020#
 (Divvy_Trips_2019_Q1 <-rename(Divvy_Trips_2019_Q1
                               ,ride_id=...1
                               ,rideable_type = bikeid
@@ -27,32 +30,42 @@ colnames(Divvy_Trips_2020_Q1)
                               ,end_station_id = to_station_id
                               ,member_casual = usertype
                                ))
+
+#COMPARE THE COLUMN NAMES AGAIN#
 colnames(Divvy_Trips_2019_Q1)
 colnames(Divvy_Trips_2020_Q1)
 
+#VIEW THE TYPE OF DATA#
 str(Divvy_Trips_2019_Q1)
 str(Divvy_Trips_2020_Q1)
 
+#CONVERT DATA TYPE OF SOME COLUMNS#
 Divvy_Trips_2019_Q1<- mutate(Divvy_Trips_2019_Q1,ride_id=as.character(ride_id)
                             ,rideable_type=as.character(rideable_type))
 
+#JOIN BOTH TABLES#
 all_trips <- bind_rows(Divvy_Trips_2019_Q1,Divvy_Trips_2020_Q1)
 
+#VIEW JOINED TABLES#
 view(all_trips)
 
+#DELETE SOME OUTLIERS#
 all_trips<-all_trips%>%
   select(-c(start_lat, start_lng, end_lat, end_lng, birthyear, gender, tripduration))
 
 view(all_trips)
 
+#CHANGE COLUMN NAME#
 all_trips<-all_trips %>%
   mutate(member_casual=recode(member_casual
                               ,"Subscriber"="member"
                               ,"Customer"="casual"))
+#VIEW THE SUMMARY(MEAN, MEDIAN, MODE, AVG) OF NUMERICAL DATA#
 summary(all_trips)
 
 str(all_trips)
 
+#VIEW THE DATA(5 ROWS AND COLUMN)
 head(all_trips)
 
 table(all_trips$member_casual)
